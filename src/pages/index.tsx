@@ -77,6 +77,25 @@ const Home: NextPage = () => {
     });
   }, [list, deleteAllGroceries]);
 
+  const deleteGrocery = useMutation(["deleteOne"], {
+    onSuccess: (_, deletedGrocery) => {
+      if (!list) return;
+
+      const updatedList = list.filter((item) => {
+        return item.id !== deletedGrocery.id;
+      });
+
+      queryClient.setQueryData("findAll", updatedList);
+    },
+  });
+
+  const handleDeleteGrocery = useCallback(
+    (groceryId: number) => {
+      deleteGrocery.mutate({ id: groceryId });
+    },
+    [deleteGrocery]
+  );
+
   return (
     <>
       <Head>
@@ -97,6 +116,7 @@ const Home: NextPage = () => {
                   key={item.id}
                   item={item}
                   onUpdate={handleUpdateGrocery}
+                  onDelete={handleDeleteGrocery}
                 />
               ))}
             </List>
